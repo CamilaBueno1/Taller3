@@ -1,19 +1,58 @@
-import { useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
+import { BlurView } from 'expo-blur';
+
 import { MonthlyHeader } from '@/components/MonthlyHeader';
 import { ExpenseItem } from '@/components/ExpenseItem';
 import { AddExpenseModal } from '@/components/AddExpenseModal';
 import { useExpenses } from '@/context/ExpenseContext';
 import { LiquidGlassColors, Spacing } from '@/constants/theme';
+import { Expense } from '@/types/expense';
 
-// Pantalla principal: total del mes, lista de gastos y el boton + para agregar
 export default function HomeScreen() {
-  const { getCurrentMonthExpenses , isLoading } = useExpenses();
+  const {
+    getCurrentMonthExpenses,
+    isLoading,
+    deleteExpense,
+    sortByAmount,
+    setSortByAmount,
+  } = useExpenses();
+
   const [modalVisible, setModalVisible] = useState(false);
+  const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
+  const [receiptViewerUri, setReceiptViewerUri] = useState<string | null>(null);
+
   const expenses = getCurrentMonthExpenses();
+
+  const handleOpenAdd = () => {
+    setExpenseToEdit(null);
+    setModalVisible(true);
+  };
+
+  const handleOpenEdit = (expense: Expense) => {
+    setExpenseToEdit(expense);
+    setModalVisible(true);
+  };
+
+  const handleDeleteExpense = async (id: string) => {
+    try {
+      await deleteExpense(id);
+    } catch (error) {
+      console.error('Error al eliminar gasto:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -22,7 +61,7 @@ export default function HomeScreen() {
         colors={['#FFF5F9', '#FFE8F0', '#FFF9FC']}
         style={styles.gradient}
       >
-        {/* Circulos de color detras: dan algo que desenfocar a las tarjetas */}
+        {/* Círculos de color detrás para el efecto de desenfoque Liquid Glass */}
         <View pointerEvents="none" style={[styles.orb, styles.orbPink]} />
         <View pointerEvents="none" style={[styles.orb, styles.orbOrange]} />
         <View pointerEvents="none" style={[styles.orb, styles.orbPurple]} />
@@ -33,20 +72,74 @@ export default function HomeScreen() {
 
             <MonthlyHeader />
 
-            {/* Si no hay gastos este mes mostramos un mensaje en vez de la lista */}
-                        {/* Mientras se leen los datos guardados se muestra un indicador;
-                sin esto se veria un instante el mensaje de "no hay gastos" */}
+            {/* BARRA DE ORDENAMIENTO VISUAL Y FILTRADO */}
+            <View style={styles.sortHeader}>
+              <View>
+                <Text style={styles.sectionTitle}>Historial del mes</Text>
+                <Text style={styles.sectionCount}>
+                  {expenses.length === 1 ? '1 registro' : `${expenses.length} registros`}
+                </Text>
+              </View>
+
+              <View style={styles.sortToggleGroup}>
+                <TouchableOpacity
+                  style={[
+                    styles.sortButton,
+                    !sortByAmount ? styles.sortButtonActive : null,
+                  ]}
+                  onPress={() => setSortByAmount(false)}
+                  activeOpacity={0.8}
+                >
+                  {!sortByAmount ? (
+                    <LinearGradient
+                      colors={[LiquidGlassColors.primary, LiquidGlassColors.secondary]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.sortButtonGradient}
+                    >
+                      <Text style={styles.sortButtonTextActive}>🕒 Recientes</Text>
+                    </LinearGradient>
+                  ) : (
+                    <Text style={styles.sortButtonText}>🕒 Recientes</Text>
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.sortButton,
+                    sortByAmount ? styles.sortButtonActive : null,
+                  ]}
+                  onPress={() => setSortByAmount(true)}
+                  activeOpacity={0.8}
+                >
+                  {sortByAmount ? (
+                    <LinearGradient
+                      colors={[LiquidGlassColors.primary, LiquidGlassColors.secondary]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.sortButtonGradient}
+                    >
+                      <Text style={styles.sortButtonTextActive}>💰 Mayor monto</Text>
+                    </LinearGradient>
+                  ) : (
+                    <Text style={styles.sortButtonText}>💰 Mayor monto</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* LISTADO DE GASTOS O ESTADO VACÍO */}
             {isLoading ? (
               <View style={styles.emptyState}>
                 <ActivityIndicator size="large" color={LiquidGlassColors.primary} />
+                <Text style={styles.loadingText}>Cargando tus gastos...</Text>
               </View>
             ) : expenses.length === 0 ? (
-              /* Si no hay gastos este mes mostramos un mensaje en vez de la lista */
               <View style={styles.emptyState}>
                 <Text style={styles.emptyIcon}>💸</Text>
                 <Text style={styles.emptyTitle}>No hay gastos registrados</Text>
                 <Text style={styles.emptyText}>
-                  Presiona el botón + para agregar tu primer gasto
+                  Presiona el botón + para registrar tu primer gasto del mes
                 </Text>
               </View>
             ) : (
@@ -54,7 +147,13 @@ export default function HomeScreen() {
                 data={expenses}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item, index }) => (
-                  <ExpenseItem expense={item} index={index} />
+                  <ExpenseItem
+                    expense={item}
+                    index={index}
+                    onEdit={handleOpenEdit}
+                    onDelete={handleDeleteExpense}
+                    onViewReceipt={(uri) => setReceiptViewerUri(uri)}
+                  />
                 )}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
@@ -62,10 +161,10 @@ export default function HomeScreen() {
             )}
           </View>
 
-          {/* Boton + de la esquina */}
+          {/* BOTÓN FLOTANTE (FAB) PARA AGREGAR */}
           <TouchableOpacity
             style={styles.fab}
-            onPress={() => setModalVisible(true)}
+            onPress={handleOpenAdd}
             activeOpacity={0.8}
           >
             <LinearGradient
@@ -78,10 +177,53 @@ export default function HomeScreen() {
             </LinearGradient>
           </TouchableOpacity>
 
+          {/* MODAL PARA CREACIÓN / EDICIÓN DE GASTOS */}
           <AddExpenseModal
             visible={modalVisible}
-            onClose={() => setModalVisible(false)}
+            onClose={() => {
+              setModalVisible(false);
+              setExpenseToEdit(null);
+            }}
+            expenseToEdit={expenseToEdit}
           />
+
+          {/* MODAL PARA VISUALIZAR COMPROBANTE EN TAMAÑO COMPLETO */}
+          <Modal
+            visible={!!receiptViewerUri}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setReceiptViewerUri(null)}
+          >
+            <View style={styles.viewerOverlay}>
+              <TouchableOpacity
+                style={StyleSheet.absoluteFill}
+                activeOpacity={1}
+                onPress={() => setReceiptViewerUri(null)}
+              >
+                <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
+              </TouchableOpacity>
+
+              <View style={styles.viewerContent}>
+                <View style={styles.viewerHeader}>
+                  <Text style={styles.viewerTitle}>Comprobante adjunto</Text>
+                  <TouchableOpacity
+                    style={styles.viewerCloseButton}
+                    onPress={() => setReceiptViewerUri(null)}
+                  >
+                    <Text style={styles.viewerCloseText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {receiptViewerUri && (
+                  <Image
+                    source={{ uri: receiptViewerUri }}
+                    style={styles.viewerImage}
+                    resizeMode="contain"
+                  />
+                )}
+              </View>
+            </View>
+          </Modal>
         </SafeAreaView>
       </LinearGradient>
     </View>
@@ -132,17 +274,72 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: LiquidGlassColors.glassText,
-    marginBottom: Spacing.three,
+    marginBottom: Spacing.two,
     textAlign: 'center',
   },
+  sortHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.two,
+    marginTop: -Spacing.one,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: LiquidGlassColors.glassText,
+  },
+  sectionCount: {
+    fontSize: 12,
+    color: LiquidGlassColors.glassTextSecondary,
+  },
+  sortToggleGroup: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.55)',
+    borderRadius: Spacing.two,
+    padding: 3,
+    borderWidth: 1,
+    borderColor: LiquidGlassColors.glassBorder,
+    gap: 4,
+  },
+  sortButton: {
+    borderRadius: Spacing.two - 2,
+    overflow: 'hidden',
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+  },
+  sortButtonActive: {
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+  },
+  sortButtonGradient: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: Spacing.two - 2,
+  },
+  sortButtonText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: LiquidGlassColors.glassTextSecondary,
+  },
+  sortButtonTextActive: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: LiquidGlassColors.glassTextLight,
+  },
   listContent: {
-    paddingBottom: 100,
+    paddingBottom: 110,
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: Spacing.four,
+  },
+  loadingText: {
+    marginTop: Spacing.two,
+    fontSize: 14,
+    color: LiquidGlassColors.glassTextSecondary,
   },
   emptyIcon: {
     fontSize: 64,
@@ -186,5 +383,51 @@ const styles = StyleSheet.create({
     fontSize: 32,
     color: LiquidGlassColors.glassTextLight,
     fontWeight: '300',
+  },
+  viewerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.four,
+  },
+  viewerContent: {
+    width: '100%',
+    maxHeight: '85%',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: Spacing.three,
+    padding: Spacing.three,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: LiquidGlassColors.glassBorder,
+  },
+  viewerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.two,
+  },
+  viewerTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: LiquidGlassColors.glassText,
+  },
+  viewerCloseButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(196, 69, 105, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  viewerCloseText: {
+    fontSize: 16,
+    color: LiquidGlassColors.secondary,
+    fontWeight: 'bold',
+  },
+  viewerImage: {
+    width: '100%',
+    height: 400,
+    borderRadius: Spacing.two,
   },
 });
