@@ -46,7 +46,8 @@ export const MonthlyHeader: React.FC = () => {
     <View style={styles.container}>
       <GlassCard style={styles.card}>
         <LinearGradient
-          colors={[LiquidGlassColors.primary, LiquidGlassColors.secondary]}
+          // Con algo de transparencia para que se vea el blur de la tarjeta
+          colors={['rgba(255, 107, 157, 0.7)', 'rgba(196, 69, 105, 0.7)']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}

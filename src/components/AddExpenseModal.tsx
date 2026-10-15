@@ -223,7 +223,8 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
   },
   modalBackground: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    // Bajito a proposito: si es casi opaco no se ve el blur del fondo
+    backgroundColor: 'rgba(255, 255, 255, 0.45)',
     borderTopLeftRadius: Spacing.four,
     borderTopRightRadius: Spacing.four,
   },

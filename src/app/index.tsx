@@ -22,6 +22,11 @@ export default function HomeScreen() {
         colors={['#FFF5F9', '#FFE8F0', '#FFF9FC']}
         style={styles.gradient}
       >
+        {/* Circulos de color detras: dan algo que desenfocar a las tarjetas */}
+        <View pointerEvents="none" style={[styles.orb, styles.orbPink]} />
+        <View pointerEvents="none" style={[styles.orb, styles.orbOrange]} />
+        <View pointerEvents="none" style={[styles.orb, styles.orbPurple]} />
+
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.content}>
             <Text style={styles.appTitle}>Gastos Poliestudiante</Text>
@@ -85,6 +90,31 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+  },
+  orb: {
+    position: 'absolute',
+    borderRadius: 999,
+  },
+  orbPink: {
+    width: 220,
+    height: 220,
+    top: 60,
+    left: -60,
+    backgroundColor: 'rgba(255, 107, 157, 0.55)',
+  },
+  orbOrange: {
+    width: 180,
+    height: 180,
+    top: 260,
+    right: -50,
+    backgroundColor: 'rgba(255, 159, 94, 0.5)',
+  },
+  orbPurple: {
+    width: 200,
+    height: 200,
+    bottom: 120,
+    left: 20,
+    backgroundColor: 'rgba(168, 120, 220, 0.4)',
   },
   content: {
     flex: 1,
