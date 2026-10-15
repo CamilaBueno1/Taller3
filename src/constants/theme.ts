@@ -1,10 +1,3 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-import '@/global.css';
-
 import { Platform } from 'react-native';
 
 export const Colors = {
@@ -22,6 +15,32 @@ export const Colors = {
     backgroundSelected: '#2E3135',
     textSecondary: '#B0B4BA',
   },
+} as const;
+
+/**
+ * Colores del tema Liquid Glass - Paleta única no genérica
+ */
+export const LiquidGlassColors = {
+  // Gradientes principales - Coral vibrante a lavanda
+  primary: '#FF6B9D',      // Coral rosado intenso
+  secondary: '#C44569',    // Vino/burgundy profundo
+  accent: '#A8E6CF',       // Verde menta suave (contraste)
+
+  // Fondos con transparencia para efecto glass
+  glassBackground: 'rgba(255, 107, 157, 0.08)',     // Muy sutil
+  glassBackgroundDark: 'rgba(196, 69, 105, 0.12)',  // Un poco más intenso
+
+  // Bordes glass
+  glassBorder: 'rgba(255, 107, 157, 0.25)',
+
+  // Textos
+  glassText: '#2C1B47',           // Púrpura oscuro profundo
+  glassTextLight: '#FFFBF5',      // Blanco cálido (no puro)
+  glassTextSecondary: '#8B6B8F',  // Malva grisáceo
+
+  // Sombras
+  shadowLight: 'rgba(255, 107, 157, 0.15)',
+  shadowDark: 'rgba(196, 69, 105, 0.25)',
 } as const;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;

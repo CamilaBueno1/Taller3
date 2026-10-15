@@ -1,56 +1,88 @@
-# Welcome to your Expo app 👋
+# 💸 Gestor de Gastos para Poliestudiantes
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Una aplicación móvil moderna para Android desarrollada con **Expo (React Native)** y **TypeScript** que permite a estudiantes universitarios registrar y visualizar sus gastos mensuales.
 
-## Get started
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Expo](https://img.shields.io/badge/expo-SDK%2057-blue.svg)
+![TypeScript](https://img.shields.io/badge/typescript-6.0.3-blue.svg)
+![React Native](https://img.shields.io/badge/react--native-0.86.3-blue.svg)
 
-1. Install dependencies
+>  **Este proyecto es la base para un taller progresivo de desarrollo móvil**. 
+Los alumnos comenzarán con esta versión base (sin persistencia de datos) y avanzarán implementando AsyncStorage, SQLite 
+---
+##  Instalación y Configuración
 
-   ```bash
-   npm install
-   ```
+### Prerrequisitos
 
-2. Start the app
+Antes de comenzar, asegúrate de tener instalado:
 
-   ```bash
-   npx expo start
-   ```
+- ✅ **Node.js** versión 18 o superior ([Descargar aquí](https://nodejs.org/))
+- ✅ **npm** o **yarn** (viene con Node.js)
 
-In the output, you'll find options to open the app in a
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+###  Instalar dependencias
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Este comando instalará todas las dependencias necesarias listadas en `package.json`. Puede tomar varios minutos la primera vez.
 
-### Other setup steps
+### Instalación manual de cada dependencia (opcional)
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+`npm install` ya instala todo lo anterior. Si empiezas un proyecto desde cero o necesitas reinstalar una dependencia puntual, estos son los comandos de cada una. Usa `npx expo install` para que Expo elija la versión compatible con el SDK 57.
 
-## Learn more
+**Núcleo (Expo, React y React Native):**
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+npx expo install expo
+npx expo install react react-dom react-native
+npx expo install expo-router
+npx expo install expo-constants expo-linking expo-status-bar expo-system-ui expo-splash-screen
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+**Interfaz y efecto Liquid Glass:**
 
-## Join the community
+```bash
+npx expo install expo-blur
+npx expo install expo-linear-gradient
+npx expo install expo-glass-effect
+npx expo install expo-image
+npx expo install expo-symbols
+npx expo install expo-font
+npx expo install @expo/ui
+```
 
-Join our community of developers creating universal apps.
+**Animaciones, gestos y navegación:**
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npx expo install react-native-reanimated react-native-worklets
+npx expo install react-native-gesture-handler
+npx expo install react-native-safe-area-context
+npx expo install react-native-screens
+```
+
+**Utilidades de dispositivo y web:**
+
+```bash
+npx expo install expo-device
+npx expo install expo-web-browser
+npx expo install react-native-web
+```
+
+| Dependencia | Para qué sirve |
+|-------------|----------------|
+| `expo` | Framework base para React Native |
+| `react`, `react-dom`, `react-native` | Librerías centrales de la UI |
+| `expo-router` | Navegación basada en archivos |
+| `expo-constants`, `expo-linking`, `expo-status-bar`, `expo-system-ui`, `expo-splash-screen` | Soporte de Expo Router y del sistema |
+| `expo-blur` | Efectos de desenfoque (blur) |
+| `expo-linear-gradient` | Gradientes nativos |
+| `expo-glass-effect` | Efecto de cristal nativo |
+| `expo-image`, `expo-symbols`, `expo-font` | Imágenes, iconos y fuentes |
+| `@expo/ui` | Componentes nativos de Expo |
+| `react-native-reanimated`, `react-native-worklets` | Animaciones fluidas |
+| `react-native-gesture-handler` | Gestos táctiles |
+| `react-native-safe-area-context`, `react-native-screens` | Áreas seguras y pantallas nativas |
+| `expo-device`, `expo-web-browser` | Información del dispositivo y navegador |
+| `react-native-web` | Ejecutar la app en el navegador |
