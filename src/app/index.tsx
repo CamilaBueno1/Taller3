@@ -34,7 +34,7 @@ export default function HomeScreen() {
             <MonthlyHeader />
 
             {/* Si no hay gastos este mes mostramos un mensaje en vez de la lista */}
-            {/* Mientras se leen los datos guardados se muestra un indicador;
+                        {/* Mientras se leen los datos guardados se muestra un indicador;
                 sin esto se veria un instante el mensaje de "no hay gastos" */}
             {isLoading ? (
               <View style={styles.emptyState}>
@@ -43,6 +43,7 @@ export default function HomeScreen() {
             ) : expenses.length === 0 ? (
               /* Si no hay gastos este mes mostramos un mensaje en vez de la lista */
               <View style={styles.emptyState}>
+                <Text style={styles.emptyIcon}>💸</Text>
                 <Text style={styles.emptyTitle}>No hay gastos registrados</Text>
                 <Text style={styles.emptyText}>
                   Presiona el botón + para agregar tu primer gasto
